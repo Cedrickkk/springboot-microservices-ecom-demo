@@ -9,8 +9,9 @@
     <packaging>pom</packaging>
     <modules>
         <module>shared/common</module>
-        <module>services/customer-service</module>
         <module>services/config-server</module>
         <module>services/discovery-server</module>
+        <module>services/customer-service</module>
+        <module>services/product-service</module>
     </modules>
 </project>
