@@ -9,3 +9,8 @@ spring:
     port: 27017
     database: customer
     authentication-database: admin
+
+eureka:
+  instance:
+    prefer-ip-address: false
+    instance-id: ${spring.application.name}:${server.port}
