@@ -1,5 +1,7 @@
 package com.microservices.ecom.api;
 
+import com.microservices.common.response.ApiResponseUtil;
+import com.microservices.common.response.SuccessApiResponse;
 import com.microservices.ecom.dto.CustomerRequest;
 import com.microservices.ecom.dto.CustomerResponse;
 import com.microservices.ecom.service.CustomerService;
@@ -19,34 +21,39 @@ public class CustomerController {
     private final CustomerService customerService;
 
     @PostMapping
-    public ResponseEntity<String> createCustomer(@RequestBody @Valid CustomerRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(customerService.createCustomer(request));
+    public ResponseEntity<SuccessApiResponse<String>> createCustomer(@RequestBody @Valid CustomerRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponseUtil.success(
+                HttpStatus.CREATED, customerService.createCustomer(request), "Customer created successfully."));
     }
 
     @GetMapping
-    public ResponseEntity<List<CustomerResponse>> findAll() {
-        return ResponseEntity.ok(customerService.findAllCustomers());
+    public ResponseEntity<SuccessApiResponse<List<CustomerResponse>>> findAll() {
+        return ResponseEntity.ok(ApiResponseUtil.success(
+                customerService.findAllCustomers(), "Customers retrieved successfully."));
     }
 
     @GetMapping("/{customerId}")
-    public ResponseEntity<CustomerResponse> findById(@PathVariable String customerId) {
-        return ResponseEntity.ok(customerService.findById(customerId));
+    public ResponseEntity<SuccessApiResponse<CustomerResponse>> findById(@PathVariable String customerId) {
+        return ResponseEntity.ok(ApiResponseUtil.success(
+                customerService.findById(customerId), "Customer retrieved successfully."));
     }
 
     @GetMapping("/exists/{customerId}")
-    public ResponseEntity<Boolean> existsById(@PathVariable String customerId) {
-        return ResponseEntity.ok(customerService.existsById(customerId));
+    public ResponseEntity<SuccessApiResponse<Boolean>> existsById(@PathVariable String customerId) {
+        return ResponseEntity.ok(ApiResponseUtil.success(
+                customerService.existsById(customerId), "Customer existence checked successfully."));
     }
 
     @PutMapping
-    public ResponseEntity<Void> updateCustomer(@RequestBody @Valid CustomerRequest request) {
+    public ResponseEntity<SuccessApiResponse<Void>> updateCustomer(@RequestBody @Valid CustomerRequest request) {
         customerService.updateCustomer(request);
-        return ResponseEntity.accepted().build();
+        return ResponseEntity.accepted().body(ApiResponseUtil.success(
+                HttpStatus.ACCEPTED, null, "Customer updated successfully."));
     }
 
     @DeleteMapping("/{customerId}")
-    public ResponseEntity<Void> deleteCustomer(@PathVariable String customerId) {
+    public ResponseEntity<SuccessApiResponse<Void>> deleteCustomer(@PathVariable String customerId) {
         customerService.deleteCustomer(customerId);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(ApiResponseUtil.success(null, "Customer deleted successfully."));
     }
 }

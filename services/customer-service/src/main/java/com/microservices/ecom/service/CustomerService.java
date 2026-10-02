@@ -3,12 +3,11 @@ package com.microservices.ecom.service;
 import com.microservices.ecom.domain.Customer;
 import com.microservices.ecom.dto.CustomerRequest;
 import com.microservices.ecom.dto.CustomerResponse;
+import com.microservices.ecom.exception.CustomerNotFoundException;
 import com.microservices.ecom.mapper.CustomerMapper;
 import com.microservices.ecom.repository.CustomerRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -34,16 +33,14 @@ public class CustomerService {
     public CustomerResponse findById(String id) {
         return customerRepository.findById(id)
                 .map(mapper::toResponse)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
+                .orElseThrow(() -> new CustomerNotFoundException(
                         String.format("Customer with ID '%s' not found.", id)
                 ));
     }
 
     public void updateCustomer(CustomerRequest request) {
         Customer customer = customerRepository.findById(request.id())
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
+                .orElseThrow(() -> new CustomerNotFoundException(
                         String.format("Cannot update customer:: No customer found with ID '%s'", request.id())
                 ));
         mergeCustomerInfo(customer, request);
@@ -52,8 +49,7 @@ public class CustomerService {
 
     public void deleteCustomer(String id) {
         if (!customerRepository.existsById(id)) {
-            throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND,
+            throw new CustomerNotFoundException(
                     String.format("Cannot delete customer:: No customer found with ID '%s'", id)
             );
         }
