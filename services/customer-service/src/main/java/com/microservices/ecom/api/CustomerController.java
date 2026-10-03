@@ -29,19 +29,19 @@ public class CustomerController {
     @GetMapping
     public ResponseEntity<SuccessApiResponse<List<CustomerResponse>>> findAll() {
         return ResponseEntity.ok(ApiResponseUtil.success(
-                customerService.findAllCustomers(), "Customers retrieved successfully."));
+                HttpStatus.OK, customerService.findAllCustomers(), "Customers retrieved successfully."));
     }
 
     @GetMapping("/{customerId}")
     public ResponseEntity<SuccessApiResponse<CustomerResponse>> findById(@PathVariable String customerId) {
         return ResponseEntity.ok(ApiResponseUtil.success(
-                customerService.findById(customerId), "Customer retrieved successfully."));
+                HttpStatus.OK, customerService.findById(customerId), "Customer retrieved successfully."));
     }
 
     @GetMapping("/exists/{customerId}")
     public ResponseEntity<SuccessApiResponse<Boolean>> existsById(@PathVariable String customerId) {
         return ResponseEntity.ok(ApiResponseUtil.success(
-                customerService.existsById(customerId), "Customer existence checked successfully."));
+                HttpStatus.OK, customerService.existsById(customerId), "Customer existence checked successfully."));
     }
 
     @PutMapping
@@ -54,6 +54,6 @@ public class CustomerController {
     @DeleteMapping("/{customerId}")
     public ResponseEntity<SuccessApiResponse<Void>> deleteCustomer(@PathVariable String customerId) {
         customerService.deleteCustomer(customerId);
-        return ResponseEntity.ok(ApiResponseUtil.success(null, "Customer deleted successfully."));
+        return ResponseEntity.ok(ApiResponseUtil.success(HttpStatus.OK, null, "Customer deleted successfully."));
     }
 }

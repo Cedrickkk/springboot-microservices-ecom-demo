@@ -32,6 +32,8 @@ mvn -pl shared/common install
 ```
 
 Rebuild consuming services after changing shared code. For new services, add their
-directory to the root POM's modules. `ApiResponseUtil.success(data, message)` uses
-HTTP 200; use `success(HttpStatus.CREATED, data, message)` for a different status
-and set the same HTTP status on the controller's `ResponseEntity`.
+directory to the root POM's modules. Pass the HTTP status explicitly to `ApiResponseUtil.success(status, data, message)`
+and `ApiResponseUtil.error(status, message)`, and set the same HTTP status on the
+controller's `ResponseEntity`. For example, use `HttpStatus.OK` for retrieval and
+`HttpStatus.CREATED` for creation. The deprecated two-argument `success` overload
+remains available for compatibility and defaults to HTTP 200.

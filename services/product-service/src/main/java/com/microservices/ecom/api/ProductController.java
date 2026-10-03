@@ -27,17 +27,17 @@ public class ProductController {
 
     @GetMapping
     public ResponseEntity<SuccessApiResponse<List<ProductResponse>>> findAll() {
-        return ResponseEntity.ok(ApiResponseUtil.success(productService.findAll(), "Products retrieved successfully."));
+        return ResponseEntity.ok(ApiResponseUtil.success(HttpStatus.OK, productService.findAll(), "Products retrieved successfully."));
     }
 
     @GetMapping("/{productId}")
     public ResponseEntity<SuccessApiResponse<ProductResponse>> findById(@PathVariable Integer productId) {
-        return ResponseEntity.ok(ApiResponseUtil.success(productService.findById(productId), "Product retrieved successfully."));
+        return ResponseEntity.ok(ApiResponseUtil.success(HttpStatus.OK, productService.findById(productId), "Product retrieved successfully."));
     }
 
     @PostMapping("/purchase")
     public ResponseEntity<SuccessApiResponse<List<ProductPurchaseResponse>>> purchaseProducts(
             @RequestBody @NotEmpty List<@Valid ProductPurchaseRequest> requests) {
-        return ResponseEntity.ok(ApiResponseUtil.success(productService.purchaseProducts(requests), "Products purchased successfully."));
+        return ResponseEntity.ok(ApiResponseUtil.success(HttpStatus.OK, productService.purchaseProducts(requests), "Products purchased successfully."));
     }
 }

@@ -10,6 +10,10 @@ public final class ApiResponseUtil {
     private ApiResponseUtil() {
     }
 
+    /**
+     * @deprecated Pass the HTTP status explicitly using {@link #success(HttpStatus, Object, String)}.
+     */
+    @Deprecated
     public static <T> SuccessApiResponse<T> success(T data, String message) {
         return success(HttpStatus.OK, data, message);
     }
