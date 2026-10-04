@@ -3,6 +3,10 @@ package com.microservices.ecom.service;
 import com.microservices.common.messaging.PaymentMethod;
 import com.microservices.common.response.ApiResponseUtil;
 import com.microservices.ecom.client.CustomerClient;
+import com.microservices.ecom.client.PaymentClient;
+import com.microservices.ecom.dto.CustomerResponse;
+import com.microservices.ecom.dto.PaymentRequest;
+import com.microservices.ecom.exception.PaymentProcessingException;
 import com.microservices.ecom.client.ProductClient;
 import com.microservices.ecom.domain.Order;
 import com.microservices.ecom.dto.OrderRequest;
@@ -31,6 +35,7 @@ class OrderServiceTests {
     private OrderRepository repository;
     private CustomerClient customers;
     private ProductClient products;
+    private PaymentClient payments;
     private OrderService service;
     private OrderProducer producer;
     private final OrderRequest request = new OrderRequest(null, "ORD-1", BigDecimal.TEN,
@@ -41,13 +46,14 @@ class OrderServiceTests {
         repository = mock(OrderRepository.class, withSettings().mockMaker(MockMakers.SUBCLASS));
         customers = mock(CustomerClient.class, withSettings().mockMaker(MockMakers.SUBCLASS));
         products = mock(ProductClient.class, withSettings().mockMaker(MockMakers.SUBCLASS));
+        payments = mock(PaymentClient.class, withSettings().mockMaker(MockMakers.SUBCLASS));
         producer = mock(OrderProducer.class, withSettings().mockMaker(MockMakers.SUBCLASS));
-        service = new OrderService(repository, new OrderMapper(), customers, products, producer);
+        service = new OrderService(repository, new OrderMapper(), customers, products, payments, producer);
     }
 
     @Test
     void creationValidatesCustomerPurchasesProductsAndLinksLines() {
-        when(customers.existsById("customer-1")).thenReturn(ApiResponseUtil.success(HttpStatus.OK, true, "OK"));
+        when(customers.findById("customer-1")).thenReturn(ApiResponseUtil.success(HttpStatus.OK, new CustomerResponse("customer-1", "Jane", "Doe", "jane@example.com"), "OK"));
         when(products.purchaseProducts(request.products())).thenReturn(ApiResponseUtil.success(
                 HttpStatus.OK, List.of(new ProductPurchaseResponse(1, "Book", "Book", BigDecimal.valueOf(5), 2)), "OK"));
         when(repository.save(any())).thenAnswer(invocation -> {
@@ -59,18 +65,31 @@ class OrderServiceTests {
             order.setId(7);
             return order;
         });
+        when(payments.createPayment(any())).thenReturn(ApiResponseUtil.success(HttpStatus.CREATED, 42, "OK"));
         assertEquals(7, service.createOrder(request));
-        var sequence = inOrder(customers, products, repository, producer);
-        sequence.verify(customers).existsById("customer-1");
+        var sequence = inOrder(customers, products, repository, producer, payments);
+        sequence.verify(customers).findById("customer-1");
         sequence.verify(products).purchaseProducts(request.products());
         sequence.verify(repository).save(any());
         sequence.verify(producer).sendOrderConfirmation(argThat(event ->
                 event.aggregateId().equals("7") && event.orderReference().equals("ORD-1") && event.products().size() == 1));
+        sequence.verify(repository).flush();
+        var paymentRequest = org.mockito.ArgumentCaptor.forClass(PaymentRequest.class);
+        sequence.verify(payments).createPayment(paymentRequest.capture());
+        var payment = paymentRequest.getValue();
+        assertEquals(7, payment.orderId());
+        assertEquals("ORD-1", payment.orderReference());
+        assertEquals(BigDecimal.TEN, payment.amount());
+        assertEquals(PaymentMethod.VISA, payment.paymentMethod());
+        assertEquals("customer-1", payment.customer().id());
+        assertEquals("Jane", payment.customer().firstname());
+        assertEquals("Doe", payment.customer().lastname());
+        assertEquals("jane@example.com", payment.customer().email());
     }
 
     @Test
     void outboxFailureIsNotReportedAsSuccessfulOrderCreation() {
-        when(customers.existsById("customer-1")).thenReturn(ApiResponseUtil.success(HttpStatus.OK, true, "OK"));
+        when(customers.findById("customer-1")).thenReturn(ApiResponseUtil.success(HttpStatus.OK, new CustomerResponse("customer-1", "Jane", "Doe", "jane@example.com"), "OK"));
         when(products.purchaseProducts(request.products())).thenReturn(ApiResponseUtil.success(
                 HttpStatus.OK, List.of(new ProductPurchaseResponse(1, "Book", "Book", BigDecimal.valueOf(5), 2)), "OK"));
         var order = new OrderMapper().toEntity(request);
@@ -78,21 +97,70 @@ class OrderServiceTests {
         when(repository.save(any())).thenReturn(order);
         doThrow(new IllegalStateException("database write failed")).when(producer).sendOrderConfirmation(any());
         assertThrows(IllegalStateException.class, () -> service.createOrder(request));
+        verifyNoInteractions(payments);
+    }
+
+    private void prepareCreation() {
+        when(customers.findById("customer-1")).thenReturn(ApiResponseUtil.success(HttpStatus.OK,
+                new CustomerResponse("customer-1", "Jane", "Doe", "jane@example.com"), "OK"));
+        when(products.purchaseProducts(any())).thenReturn(ApiResponseUtil.success(HttpStatus.OK,
+                List.of(new ProductPurchaseResponse(1, "Book", "Book", BigDecimal.valueOf(5), 2)), "OK"));
+        when(repository.save(any())).thenAnswer(invocation -> {
+            Order order = invocation.getArgument(0);
+            order.setId(7);
+            return order;
+        });
+    }
+
+    @Test
+    void invalidPaymentResponsesAreRejected() {
+        prepareCreation();
+        for (Integer paymentId : new Integer[]{null, 0, -1}) {
+            when(payments.createPayment(any())).thenReturn(ApiResponseUtil.success(HttpStatus.CREATED, paymentId, "OK"));
+            assertThrows(PaymentProcessingException.class, () -> service.createOrder(request));
+        }
+        when(payments.createPayment(any())).thenReturn(null);
+        assertThrows(PaymentProcessingException.class, () -> service.createOrder(request));
+    }
+
+    @Test
+    void paymentFailurePropagates() {
+        prepareCreation();
+        when(payments.createPayment(any())).thenThrow(new IllegalStateException("payment unavailable"));
+        assertThrows(IllegalStateException.class, () -> service.createOrder(request));
+    }
+
+    @Test
+    void localFlushFailureDoesNotCreateRemotePayment() {
+        prepareCreation();
+        doThrow(new IllegalStateException("constraint failure")).when(repository).flush();
+        assertThrows(IllegalStateException.class, () -> service.createOrder(request));
+        verifyNoInteractions(payments);
+    }
+
+    @Test
+    void customer404IsReportedAsMissingCustomer() {
+        when(customers.findById("customer-1")).thenThrow(feign.FeignException.errorStatus("findCustomer",
+                feign.Response.builder().status(404).reason("Not Found")
+                        .request(feign.Request.create(feign.Request.HttpMethod.GET, "http://customer/customer-1",
+                                java.util.Map.of(), null, java.nio.charset.StandardCharsets.UTF_8, null)).build()));
+        assertThrows(CustomerNotFoundException.class, () -> service.createOrder(request));
+        verifyNoInteractions(products, payments, repository, producer);
     }
 
     @Test
     void missingCustomerDoesNotPurchaseOrPersist() {
-        when(customers.existsById("customer-1")).thenReturn(ApiResponseUtil.success(HttpStatus.OK, false, "OK"));
+        when(customers.findById("customer-1")).thenReturn(ApiResponseUtil.success(HttpStatus.OK, (CustomerResponse) null, "OK"));
         assertThrows(CustomerNotFoundException.class, () -> service.createOrder(request));
-        verifyNoInteractions(products, repository, producer);
+        verifyNoInteractions(products, payments, repository, producer);
     }
 
     @Test
     void rejectedPurchaseDoesNotPersist() {
-        when(customers.existsById("customer-1")).thenReturn(ApiResponseUtil.success(HttpStatus.OK, true, "OK"));
+        when(customers.findById("customer-1")).thenReturn(ApiResponseUtil.success(HttpStatus.OK, new CustomerResponse("customer-1", "Jane", "Doe", "jane@example.com"), "OK"));
         when(products.purchaseProducts(any())).thenThrow(new OrderPurchaseException("Insufficient stock"));
         assertThrows(OrderPurchaseException.class, () -> service.createOrder(request));
-        verifyNoInteractions(repository, producer);
+        verifyNoInteractions(payments, repository, producer);
     }
 
     @Test

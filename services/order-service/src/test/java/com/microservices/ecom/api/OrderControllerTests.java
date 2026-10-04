@@ -47,6 +47,16 @@ class OrderControllerTests {
         verifyNoInteractions(service);
     }
     @Test
+    void invalidPaymentResponseReturns502Envelope() throws Exception {
+        when(service.createOrder(any())).thenThrow(new PaymentProcessingException("Invalid payment response"));
+        mvc.perform(post("/api/v1/orders").contentType(MediaType.APPLICATION_JSON).content("""
+                {"reference":"ORD-1","amount":10,"paymentMethod":"VISA","customerId":"c1",
+                 "products":[{"productId":1,"quantity":2}]}
+                """))
+                .andExpect(status().isBadGateway()).andExpect(jsonPath("$.code").value(502));
+    }
+
+    @Test
     void missingOrderReturns404Envelope() throws Exception {
         when(service.findById(99)).thenThrow(new OrderNotFoundException("Order not found"));
         mvc.perform(get("/api/v1/orders/99"))

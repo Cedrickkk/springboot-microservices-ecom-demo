@@ -43,8 +43,14 @@ public class GlobalExceptionHandler {
         HttpStatus status = ex.status() == 400 || ex.status() == 404
                 ? HttpStatus.BAD_REQUEST : HttpStatus.BAD_GATEWAY;
         return ResponseEntity.status(status).body(ApiResponseUtil.error(status,
-                status == HttpStatus.BAD_REQUEST ? "Customer or product request was rejected."
+                status == HttpStatus.BAD_REQUEST ? "Customer, product, or payment request was rejected."
                         : "A required service is unavailable. Please try again later."));
+    }
+
+    @ExceptionHandler(PaymentProcessingException.class)
+    public ResponseEntity<ErrorApiResponse<Void>> handlePaymentProcessingException(PaymentProcessingException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_GATEWAY)
+                .body(ApiResponseUtil.error(HttpStatus.BAD_GATEWAY, ex.getMessage()));
     }
 
     @ExceptionHandler(OrderPurchaseException.class)
