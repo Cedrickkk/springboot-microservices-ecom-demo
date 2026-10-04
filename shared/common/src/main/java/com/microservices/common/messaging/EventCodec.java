@@ -10,7 +10,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public final class EventCodec {
     private static final Map<EventTopics, Class<? extends MessagingEvent>> TYPES = Map.of(
-            EventTopics.ORDER_CONFIRMATION, OrderConfirmationEvent.class);
+            EventTopics.ORDER_CONFIRMATION, OrderConfirmationEvent.class,
+            EventTopics.PAYMENT_CONFIRMATION, PaymentConfirmationEvent.class);
 
     private final JsonMapper mapper;
 

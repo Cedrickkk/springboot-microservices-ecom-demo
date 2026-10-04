@@ -8,7 +8,8 @@ import lombok.experimental.Accessors;
 @Accessors(fluent = true)
 @RequiredArgsConstructor
 public enum EventTopics {
-    ORDER_CONFIRMATION("order-topic");
+    ORDER_CONFIRMATION("order-topic"),
+    PAYMENT_CONFIRMATION("payment-topic");
 
     private final String defaultTopic;
 }

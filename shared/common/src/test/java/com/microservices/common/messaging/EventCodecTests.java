@@ -21,6 +21,16 @@ class EventCodecTests {
     }
 
     @Test
+    void paymentConfirmationRoundTripAndTypePairing() {
+        var payment = new PaymentConfirmationEvent(UUID.randomUUID(), "42", 7, "ORD-7", BigDecimal.TEN,
+                PaymentMethod.VISA, "c1", "Jane", "Doe", "jane@example.com");
+        var encoded = codec.encode(EventTopics.PAYMENT_CONFIRMATION, "42", payment);
+        assertEquals(payment, codec.decode(EventTopics.PAYMENT_CONFIRMATION, encoded.payload()));
+        assertThrows(IllegalArgumentException.class, () -> codec.encode(EventTopics.ORDER_CONFIRMATION, "42", payment));
+        assertThrows(IllegalArgumentException.class, () -> codec.encode(EventTopics.PAYMENT_CONFIRMATION, "7", event));
+    }
+
+    @Test
     void rejectsMismatchedAggregateAndUnregisteredClass() {
         assertThrows(IllegalArgumentException.class, () -> codec.encode(EventTopics.ORDER_CONFIRMATION, "8", event));
         MessagingEvent unsupported = new MessagingEvent() {
