@@ -13,5 +13,6 @@
         <module>services/discovery-server</module>
         <module>services/customer-service</module>
         <module>services/product-service</module>
+        <module>services/order-service</module>
     </modules>
 </project>
