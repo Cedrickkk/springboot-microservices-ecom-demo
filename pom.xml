@@ -14,5 +14,6 @@
         <module>services/customer-service</module>
         <module>services/product-service</module>
         <module>services/order-service</module>
+        <module>services/payment-service</module>
     </modules>
 </project>
