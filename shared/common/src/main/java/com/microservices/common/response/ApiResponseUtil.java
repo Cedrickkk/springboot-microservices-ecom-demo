@@ -1,21 +1,21 @@
 package com.microservices.common.response;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
 
 import java.time.Instant;
 import java.util.UUID;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ApiResponseUtil {
-
-    private ApiResponseUtil() {
-    }
 
     public static <T> SuccessApiResponse<T> success(HttpStatus status, T data, String message) {
         return SuccessApiResponse.<T>builder()
                 .code(status.value())
                 .status(status.getReasonPhrase())
                 .message(message)
-                .meta(new BaseApiResponse.Meta(Instant.now(), UUID.randomUUID().toString()))
+                .meta(newMeta())
                 .data(data)
                 .build();
     }
@@ -25,8 +25,11 @@ public final class ApiResponseUtil {
                 .code(status.value())
                 .status(status.getReasonPhrase())
                 .message(message)
-                .meta(new BaseApiResponse.Meta(Instant.now(), UUID.randomUUID().toString()))
+                .meta(newMeta())
                 .build();
     }
 
+    private static BaseApiResponse.Meta newMeta() {
+        return new BaseApiResponse.Meta(Instant.now(), UUID.randomUUID().toString());
+    }
 }
