@@ -1,6 +1,6 @@
 package com.microservices.ecom.dto;
 
-import com.microservices.ecom.domain.PaymentMethod;
+import com.microservices.common.messaging.PaymentMethod;
 
 import java.math.BigDecimal;
 

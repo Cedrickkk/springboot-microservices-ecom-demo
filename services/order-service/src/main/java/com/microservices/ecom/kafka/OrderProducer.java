@@ -1,13 +1,17 @@
 package com.microservices.ecom.kafka;
 
+import com.microservices.common.messaging.EventTopics;
+import com.microservices.common.messaging.OrderConfirmationEvent;
+import com.microservices.common.messaging.OutboxStore;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@Slf4j
 public class OrderProducer {
+    private final OutboxStore outbox;
 
-
+    public void sendOrderConfirmation(OrderConfirmationEvent confirmation) {
+        outbox.enqueue(EventTopics.ORDER_CONFIRMATION, confirmation.aggregateId(), confirmation);
+    }
 }

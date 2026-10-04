@@ -1,5 +1,6 @@
 package com.microservices.ecom.domain;
 
+import com.microservices.common.messaging.PaymentMethod;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
