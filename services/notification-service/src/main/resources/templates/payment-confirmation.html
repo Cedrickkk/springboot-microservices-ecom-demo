@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>Payment confirmation</title></head>
+<body>
+<h1>Payment received</h1>
+<p>Hello <span th:text="${customerName}">Customer</span>,</p>
+<p>We received your payment of <strong th:text="${confirmation.amount()}">0.00</strong>
+    for order <strong th:text="${confirmation.orderReference()}">reference</strong>.</p>
+<p>Payment method: <span th:text="${confirmation.paymentMethod()}">Payment method</span></p>
+<p>Thank you for shopping with us.</p>
+</body>
+</html>

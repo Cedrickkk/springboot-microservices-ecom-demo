@@ -1,0 +1,58 @@
+server:
+  port: 8040
+
+spring:
+  mongodb:
+    uri: ${NOTIFICATION_MONGODB_URI:mongodb://localhost:27017/notification}
+
+  mail:
+    host: ${MAIL_HOST:localhost}
+    port: ${MAIL_PORT:1025}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail.smtp.auth: ${MAIL_SMTP_AUTH:false}
+      mail.smtp.starttls.enable: ${MAIL_SMTP_STARTTLS:false}
+      mail.smtp.connectiontimeout: 5000
+      mail.smtp.timeout: 5000
+      mail.smtp.writetimeout: 5000
+
+  cloud:
+    openfeign:
+      client:
+        config:
+          customer-service:
+            connectTimeout: 5000
+            readTimeout: 5000
+
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    consumer:
+      group-id: ${NOTIFICATION_GROUP_ID:notification-service}
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    listener:
+      ack-mode: record
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      acks: all
+      properties:
+        enable.idempotence: true
+        max.block.ms: 5000
+        delivery.timeout.ms: 10000
+        request.timeout.ms: 5000
+
+application:
+  config:
+    customer-url: ${CUSTOMER_SERVICE_URL:http://localhost:8090/api/v1/customers}
+  email:
+    from: ${MAIL_FROM:notifications@ecommerce.local}
+  messaging:
+    topics:
+      ORDER_CONFIRMATION: ${ORDER_CONFIRMATION_TOPIC:order-topic}
+      PAYMENT_CONFIRMATION: ${PAYMENT_CONFIRMATION_TOPIC:payment-topic}
+    topic-partitions: 1
+    topic-replicas: 1
