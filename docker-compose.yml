@@ -1,3 +1,20 @@
+x-java-service: &java-service
+  restart: unless-stopped
+  init: true
+  mem_limit: 768m
+  cpus: 1.0
+
+x-client-environment: &client-environment
+  SPRING_CONFIG_IMPORT: configserver:http://config-server:8888
+  EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka/
+  EUREKA_INSTANCE_PREFER_IP_ADDRESS: "true"
+
+x-client-dependencies: &client-dependencies
+  config-server:
+    condition: service_healthy
+  discovery-server:
+    condition: service_healthy
+
 services:
   postgres:
     container_name: ms_pg_sql
@@ -5,34 +22,75 @@ services:
     environment:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: admin
+      # Preserve the existing project's PostgreSQL volume layout.
       PGDATA: /var/lib/postgresql/data
     volumes:
       - postgres:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h localhost -U $$POSTGRES_USER -d postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+    mem_limit: 512m
     restart: unless-stopped
+
+  postgres-init:
+    image: postgres:18-alpine
+    environment:
+      PGPASSWORD: admin
+    volumes:
+      - ./infra/postgres/init-databases.sql:/init-databases.sql:ro
+    entrypoint: ["psql"]
+    command: ["-h", "postgres", "-U", "admin", "-d", "postgres", "-v", "ON_ERROR_STOP=1", "-f", "/init-databases.sql"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
 
   mongodb:
     container_name: ms_mongo_db
     image: mongo
     ports:
-      - "27017:27017"
+      - "127.0.0.1:27017:27017"
     volumes:
       - mongo:/data
     environment:
       MONGO_INITDB_ROOT_USERNAME: admin
       MONGO_INITDB_ROOT_PASSWORD: admin
+    healthcheck:
+      test: ["CMD-SHELL", "mongosh --quiet --host localhost --username $$MONGO_INITDB_ROOT_USERNAME --password $$MONGO_INITDB_ROOT_PASSWORD --authenticationDatabase admin --eval 'quit(db.adminCommand({ping: 1}).ok ? 0 : 1)'"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
+    mem_limit: 512m
+    restart: unless-stopped
 
   mongo-express:
     container_name: ms_mongo_express
-    image: mongo-express
-    restart: always
+    image: mongo-express:1.0.2
+    restart: unless-stopped
     ports:
-      - "8081:8081"
+      - "127.0.0.1:8081:8081"
     environment:
-      ME_CONFIG_MONGODB_ADMINUSERNAME: admin
-      ME_CONFIG_MONGODB_ADMINPASSWORD: admin
-      ME_CONFIG_MONGODB_SERVER: mongodb
+      ME_CONFIG_MONGODB_URL: mongodb://admin:admin@mongodb:27017/?authSource=admin
+      ME_CONFIG_BASICAUTH_ENABLED: "false"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    mem_limit: 256m
+
+  kafka-init:
+    image: apache/kafka:4.2.2
+    user: "0:0"
+    entrypoint: ["chown"]
+    command: ["-R", "1000:1000", "/tmp/kraft-combined-logs"]
+    volumes:
+      - kafka:/tmp/kraft-combined-logs
+    restart: "no"
 
   kafka:
     container_name: ms_kafka
@@ -56,22 +114,184 @@ services:
       KAFKA_SHARE_COORDINATOR_STATE_TOPIC_MIN_ISR: 1
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
       KAFKA_LOG_DIRS: /tmp/kraft-combined-logs
+      KAFKA_HEAP_OPTS: -Xms256m -Xmx512m
     volumes:
       - kafka:/tmp/kraft-combined-logs
     healthcheck:
-      test: [ "CMD", "/opt/kafka/bin/kafka-topics.sh", "--bootstrap-server", "kafka:19092", "--list" ]
+      test: ["CMD", "/opt/kafka/bin/kafka-topics.sh", "--bootstrap-server", "kafka:19092", "--list"]
       interval: 10s
       timeout: 10s
       retries: 10
       start_period: 30s
+    depends_on:
+      kafka-init:
+        condition: service_completed_successfully
+    mem_limit: 1g
     restart: unless-stopped
 
   mail-dev:
     container_name: ms_mail_dev
-    image: maildev/maildev
+    image: maildev/maildev:2.2.1
     ports:
-      - "1080:1080"
-      - "1025:1025"
+      - "127.0.0.1:1080:1080"
+      - "127.0.0.1:1025:1025"
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://127.0.0.1:1080', r => { r.resume(); process.exit(r.statusCode === 200 ? 0 : 1); }).on('error', () => process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    mem_limit: 256m
+    restart: unless-stopped
+
+  config-server:
+    <<: *java-service
+    build:
+      context: .
+      dockerfile: services/config-server/Dockerfile
+    ports:
+      - "127.0.0.1:8888:8888"
+
+  discovery-server:
+    <<: *java-service
+    build:
+      context: .
+      dockerfile: services/discovery-server/Dockerfile
+    environment:
+      <<: *client-environment
+      EUREKA_INSTANCE_HOSTNAME: discovery-server
+    ports:
+      - "127.0.0.1:8761:8761"
+    depends_on:
+      config-server:
+        condition: service_healthy
+
+  customer-service:
+    <<: *java-service
+    build:
+      context: .
+      dockerfile: services/customer-service/Dockerfile
+    environment:
+      <<: *client-environment
+      EUREKA_INSTANCE_HOSTNAME: customer-service
+      SPRING_MONGODB_HOST: mongodb
+    ports:
+      - "127.0.0.1:8090:8090"
+    depends_on:
+      <<: *client-dependencies
+      mongodb:
+        condition: service_healthy
+
+  product-service:
+    <<: *java-service
+    build:
+      context: .
+      dockerfile: services/product-service/Dockerfile
+    environment:
+      <<: *client-environment
+      EUREKA_INSTANCE_HOSTNAME: product-service
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/product
+    ports:
+      - "127.0.0.1:8050:8050"
+    depends_on:
+      <<: *client-dependencies
+      postgres-init:
+        condition: service_completed_successfully
+
+  payment-service:
+    <<: *java-service
+    build:
+      context: .
+      dockerfile: services/payment-service/Dockerfile
+    environment:
+      <<: *client-environment
+      EUREKA_INSTANCE_HOSTNAME: payment-service
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/payment
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:19092
+    ports:
+      - "127.0.0.1:8060:8060"
+    depends_on:
+      <<: *client-dependencies
+      postgres-init:
+        condition: service_completed_successfully
+      kafka:
+        condition: service_healthy
+
+  order-service:
+    <<: *java-service
+    build:
+      context: .
+      dockerfile: services/order-service/Dockerfile
+    environment:
+      <<: *client-environment
+      EUREKA_INSTANCE_HOSTNAME: order-service
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/order
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:19092
+      APPLICATION_CONFIG_CUSTOMER_URL: http://customer-service:8090/api/v1/customers
+      APPLICATION_CONFIG_PRODUCT_URL: http://product-service:8050/api/v1/products
+      APPLICATION_CONFIG_PAYMENT_URL: http://payment-service:8060/api/v1/payments
+    ports:
+      - "127.0.0.1:8070:8070"
+    depends_on:
+      <<: *client-dependencies
+      postgres-init:
+        condition: service_completed_successfully
+      kafka:
+        condition: service_healthy
+      customer-service:
+        condition: service_healthy
+      product-service:
+        condition: service_healthy
+      payment-service:
+        condition: service_healthy
+
+  notification-service:
+    <<: *java-service
+    build:
+      context: .
+      dockerfile: services/notification-service/Dockerfile
+    environment:
+      <<: *client-environment
+      EUREKA_INSTANCE_HOSTNAME: notification-service
+      SPRING_MONGODB_HOST: mongodb
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:19092
+      SPRING_MAIL_HOST: mail-dev
+      APPLICATION_CONFIG_CUSTOMER_URL: http://customer-service:8090/api/v1/customers
+    ports:
+      - "127.0.0.1:8040:8040"
+    depends_on:
+      <<: *client-dependencies
+      mongodb:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+      mail-dev:
+        condition: service_healthy
+      customer-service:
+        condition: service_healthy
+
+  gateway-server:
+    <<: *java-service
+    build:
+      context: .
+      dockerfile: services/gateway-server/Dockerfile
+    environment:
+      <<: *client-environment
+      EUREKA_INSTANCE_HOSTNAME: gateway-server
+    ports:
+      - "127.0.0.1:8222:8222"
+    depends_on:
+      <<: *client-dependencies
+      customer-service:
+        condition: service_healthy
+      product-service:
+        condition: service_healthy
+      payment-service:
+        condition: service_healthy
+      order-service:
+        condition: service_healthy
+      notification-service:
+        condition: service_healthy
 
 volumes:
   postgres:

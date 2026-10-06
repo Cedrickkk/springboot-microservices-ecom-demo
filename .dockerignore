@@ -1,0 +1,12 @@
+.git
+.idea
+.agents
+.codex
+.aws
+.env
+.env.*
+**/target
+**/.DS_Store
+**/*.log
+README.md
+docs
