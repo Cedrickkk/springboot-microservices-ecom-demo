@@ -3,7 +3,12 @@ server:
 
 spring:
   mongodb:
-    uri: ${NOTIFICATION_MONGODB_URI:mongodb://localhost:27017/notification}
+    username: admin
+    password: admin
+    additional-hosts: localhost
+    port: 27017
+    database: notification
+    authentication-database: admin
 
   mail:
     host: ${MAIL_HOST:localhost}
@@ -16,6 +21,7 @@ spring:
       mail.smtp.connectiontimeout: 5000
       mail.smtp.timeout: 5000
       mail.smtp.writetimeout: 5000
+
 
   cloud:
     openfeign:
@@ -47,9 +53,9 @@ spring:
 
 application:
   config:
-    customer-url: ${CUSTOMER_SERVICE_URL:http://localhost:8090/api/v1/customers}
+    customer-url: http://localhost:8090/api/v1/customers
   email:
-    from: ${MAIL_FROM:notifications@ecommerce.local}
+    from: notifications@ecommerce.local
   messaging:
     topics:
       ORDER_CONFIRMATION: ${ORDER_CONFIRMATION_TOPIC:order-topic}

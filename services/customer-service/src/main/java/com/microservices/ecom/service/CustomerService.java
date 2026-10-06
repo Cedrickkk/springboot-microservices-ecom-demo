@@ -18,9 +18,9 @@ public class CustomerService {
     private final CustomerRepository customerRepository;
     private final CustomerMapper mapper;
 
-    public String createCustomer(CustomerRequest request) {
+    public CustomerResponse createCustomer(CustomerRequest request) {
         Customer customer = customerRepository.save(mapper.toEntity(request));
-        return customer.getId();
+        return mapper.toResponse(customer);
     }
 
     public List<CustomerResponse> findAllCustomers() {

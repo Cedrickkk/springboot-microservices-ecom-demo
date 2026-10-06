@@ -21,7 +21,7 @@ public class CustomerController {
     private final CustomerService customerService;
 
     @PostMapping
-    public ResponseEntity<SuccessApiResponse<String>> createCustomer(@RequestBody @Valid CustomerRequest request) {
+    public ResponseEntity<SuccessApiResponse<CustomerResponse>> createCustomer(@RequestBody @Valid CustomerRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponseUtil.success(
                 HttpStatus.CREATED, customerService.createCustomer(request), "Customer created successfully."));
     }
