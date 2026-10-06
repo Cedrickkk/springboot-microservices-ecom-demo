@@ -1,0 +1,46 @@
+%%{init: {"theme": "base", "themeVariables": {"fontFamily": "Arial, sans-serif", "fontSize": "16px", "lineColor": "#64748b", "edgeLabelBackground": "#ffffff"}}}%%
+block-beta
+    columns 15
+
+    space:6 Client("Client") space:2 Eureka("Eureka"):2 space Config("Config Server"):3
+    space:15
+    space:6 Gateway("API Gateway") space:8
+    space:15
+    space:6 Product("Product service") space:8
+    space:15
+    space:2 Customer("Customer service") space:6 Order("Order service") space:3 Payment("Payment service") space
+    space:15
+    space:2 CustomerDB[("MongoDB<br/>customer")] space:3 ProductDB[("PostgreSQL<br/>product")] space:2 OrderDB[("PostgreSQL<br/>order")] space:3 PaymentDB[("PostgreSQL<br/>payment")] space
+    space:15
+    space:2 Mail("MailDev") space:3 Notification("Notification service") space:3 Kafka[("Kafka · KRaft<br/>Message broker")]:3 space:2
+    space:15
+    space:6 NotificationDB[("MongoDB<br/>notification")] space:8
+
+    Client --> Gateway
+    Gateway -- "/customers" --> Customer
+    Gateway -- "/products" --> Product
+    Gateway -- "/orders" --> Order
+    Order --> Customer
+    Order --> Product
+    Order -- "/payments" --> Payment
+    Customer --> CustomerDB
+    Product --> ProductDB
+    Order --> OrderDB
+    Payment --> PaymentDB
+    Order -. "Order confirmation" .-> Kafka
+    Payment -. "Payment confirmation" .-> Kafka
+    Kafka -.-> Notification
+    Notification --> NotificationDB
+    Notification -- "SMTP" --> Mail
+    Config --> Eureka
+
+    classDef service fill:#fbfef9,stroke:#b6c7a8,color:#334155
+    classDef database fill:#f8fafc,stroke:#94a3b8,color:#64748b
+    classDef platform fill:#eff6ff,stroke:#93b6e7,color:#334155
+    classDef broker fill:#f0fdf4,stroke:#86b593,color:#334155
+    classDef client fill:#ffffff,stroke:#94a3b8,color:#334155
+    class Customer,Product,Order,Payment,Notification service
+    class CustomerDB,ProductDB,OrderDB,PaymentDB,NotificationDB database
+    class Gateway,Eureka,Config platform
+    class Kafka broker
+    class Client,Mail client

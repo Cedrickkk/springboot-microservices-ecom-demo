@@ -1,104 +1,208 @@
-# Spring Boot Microservices Ecommerce Demo
+# Spring Boot Microservices E-Commerce
 
-A simple microservices application for experimenting and demonstrating the microservices architecture using Spring Boot.
+An e-commerce project for learning the microservices ecosystem with **Spring Boot and Spring Cloud**. Based on
+**Alibou’s microservices project**, with my own tweaks and adjustments.
 
-## Shared API responses
+## Architecture
 
-`shared/common` is a regular JAR containing response envelopes, validation error
-details, and `ApiResponseUtil` in `com.microservices.common.response`. Each service
-keeps its own exception handler, mapper, and domain exceptions. The library has no
-Spring components and requires no component scanning or imports to register beans.
+![E-commerce microservices architecture](docs/architecture.svg)
 
-Add this dependency to services that need the shared response format:
+The gateway routes requests to the business services. Order uses OpenFeign to call customer, product, and payment
+services. Order and payment confirmations travel through Kafka to notification service, which stores notifications
+and sends emails to MailDev.
 
-```xml
-<dependency>
-    <groupId>com.microservices</groupId>
-    <artifactId>common</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-</dependency>
-```
+The gateway and business services use **Eureka** for discovery and **Config Server** for configuration. All containers
+share the Compose network. Database labels represent separate databases within the PostgreSQL and MongoDB containers.
 
-From the repository root, build customer-service and its shared dependency:
+Route labels are relative to `/api/v1`. Payment, notification, and order-line routes are also exposed through the
+gateway; notification service additionally looks up customer details over HTTP. These connections are omitted from
+the preview for readability.
 
-```sh
-mvn -pl services/customer-service -am verify
-```
+The [SVG preview](docs/architecture.svg) preserves the layout above;
+the [Mermaid version](docs/architecture.mmd) is available for editing.
 
-Install the library locally before building or running a service independently:
+## Tech stack
 
-```sh
-mvn -pl shared/common install
-```
+Java 21, Spring Boot 4.1.1, Spring Cloud 2025.1.3, Maven, PostgreSQL, MongoDB, Kafka (KRaft), Flyway, and Docker
+Compose. `shared/common` contains shared API responses and messaging utilities.
 
-Rebuild consuming services after changing shared code. For new services, add their
-directory to the root POM's modules. Pass the HTTP status explicitly to `ApiResponseUtil.success(status, data, message)`
-and `ApiResponseUtil.error(status, message)`, and set the same HTTP status on the
-controller's `ResponseEntity`. For example, use `HttpStatus.OK` for retrieval and
-`HttpStatus.CREATED` for creation.
+## Run with Docker
 
-## Local Kafka (KRaft)
+### 1. Prerequisites
 
-Docker Compose includes `apache/kafka:4.2.2` as `ms_kafka`, using one combined
-broker/controller. The broker stores and serves messages; the KRaft controller
-manages cluster metadata. ZooKeeper is not needed. This follows the tutorial's
-single-broker approach, with Kafka's own controller replacing ZooKeeper.
+- Docker Desktop running, or Docker Engine with Docker Compose and BuildKit.
+- Enough Docker memory for eight Java services plus the databases and Kafka; around 10 GB is a practical starting point.
+- `curl` for the API examples. Java and Maven are included in the Docker build images.
 
-Start Docker Desktop, then start only Kafka:
+Run the following commands from the repository root.
+
+### 2. Build and start
 
 ```sh
-docker compose up -d --wait kafka
-docker compose ps kafka
+docker compose up -d --build --wait --wait-timeout 600
+docker compose ps --all
 ```
 
-Applications running from your IDE connect to `localhost:9092`. When you reach
-Kafka integration in the tutorial, configure the relevant Spring service with:
+The first build downloads images and Maven dependencies. Compose waits for healthy dependencies before starting
+dependent services, including Config Server, Eureka, and the gateway.
 
-```yaml
-spring:
-  kafka:
-    bootstrap-servers: localhost:9092
-```
+`postgres-init` creates the `product`, `order`, and `payment` databases, including on existing volumes. Flyway applies
+migrations and seeds sample products. `kafka-init` prepares Kafka volume permissions. Both initialization containers
+should finish with exit code `0`.
 
-Applications running on the same Compose network connect to `kafka:19092` instead.
-Compose provides that network automatically. `listeners` defines where Kafka
-accepts connections; `advertised.listeners` defines the addresses Kafka gives
-clients for subsequent requests. A container's `localhost` refers to itself,
-which is why the Docker address is different from the host address.
-
-The controller uses `kafka:29093` internally; its port is not published to your
-Mac. `KAFKA_NODE_ID: 1` identifies the node, and `1@kafka:29093` identifies the
-single controller voter. `CLUSTER_ID` identifies this local cluster and should
-stay unchanged while its volume is reused. The `kafka` volume stores messages and
-metadata across container restarts.
-
-Replication factors and minimum in-sync replica settings are `1` because only
-one broker exists. The consumer-group initial rebalance delay is `0` for quicker
-local startup. The health check lists topics through the broker API. This setup
-uses plaintext connections and one node for local learning; it has no redundancy.
-
-Try a message round trip after Kafka is healthy:
+### 3. Check the application
 
 ```sh
+curl http://localhost:8222/actuator/health/readiness
+curl http://localhost:8222/api/v1/products
+```
+
+Expect readiness status `UP` and a product list in the response's `data` field. Open
+the [Eureka dashboard](http://localhost:8761) to inspect registered services.
+
+## Local endpoints
+
+| Component            | Address / port                                                                            | Purpose                                                  |
+|----------------------|-------------------------------------------------------------------------------------------|----------------------------------------------------------|
+| API Gateway          | [localhost:8222](http://localhost:8222)                                                   | Main API entry point                                     |
+| Eureka               | [localhost:8761](http://localhost:8761)                                                   | Service registry dashboard                               |
+| Config Server        | [localhost:8888/customer-service/default](http://localhost:8888/customer-service/default) | Example service configuration                            |
+| Customer service     | `localhost:8090`                                                                          | `/api/v1/customers`                                      |
+| Product service      | `localhost:8050`                                                                          | `/api/v1/products`                                       |
+| Order service        | `localhost:8070`                                                                          | `/api/v1/orders`, `/api/v1/order-lines`                  |
+| Payment service      | `localhost:8060`                                                                          | `/api/v1/payments`                                       |
+| Notification service | `localhost:8040`                                                                          | `/api/v1/notifications`                                  |
+| Mongo Express        | [localhost:8081](http://localhost:8081)                                                   | Browse MongoDB data                                      |
+| MailDev              | [localhost:1080](http://localhost:1080)                                                   | View captured emails; SMTP on `1025`                     |
+| PostgreSQL           | `localhost:5432`                                                                          | User/password: `admin` / `admin`                         |
+| MongoDB              | `localhost:27017`                                                                         | User/password: `admin` / `admin`, auth database: `admin` |
+| Kafka                | `localhost:9092`                                                                          | Host clients; containers use `kafka:19092`               |
+
+Published ports bind to `127.0.0.1`. The bundled credentials and infrastructure are for local learning.
+
+## Try the order flow
+
+### 1. Create a customer
+
+```sh
+curl -i -X POST http://localhost:8222/api/v1/customers \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "firstname": "Alex",
+    "lastname": "Learner",
+    "email": "alex@example.com",
+    "address": {
+      "street": "Main Street",
+      "houseNumber": "1",
+      "zipCode": "1000"
+    }
+  }'
+```
+
+Copy `data.id` from the response.
+
+### 2. Pick a product
+
+```sh
+curl http://localhost:8222/api/v1/products
+```
+
+Choose a product with available stock. Note its `id` and `price`; IDs can differ between database volumes.
+
+### 3. Place an order
+
+Replace `CUSTOMER_ID`, set `productId` to the selected product's ID, and set `amount` to its price for a quantity of
+one. The numbers below are examples.
+
+```sh
+curl -i -X POST http://localhost:8222/api/v1/orders \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "reference": "LEARNING-ORDER-001",
+    "amount": 24.99,
+    "paymentMethod": "VISA",
+    "customerId": "CUSTOMER_ID",
+    "products": [{"productId": 2, "quantity": 1}]
+  }'
+```
+
+A successful request returns HTTP `201` with the order ID in `data`. The order service checks the customer, purchases
+stock, records the order, and requests payment. Order and payment confirmation events then reach the notification
+service through Kafka.
+
+### 4. View the result
+
+```sh
+curl http://localhost:8222/api/v1/orders
+curl http://localhost:8222/api/v1/notifications
+```
+
+Open [MailDev](http://localhost:1080) to view the order and payment emails. Notifications arrive asynchronously, so
+allow a few seconds.
+
+## Everyday commands
+
+```sh
+# Follow application logs
+docker compose logs -f gateway-server order-service payment-service notification-service
+
+# Rebuild a changed service
+docker compose up -d --build --wait order-service
+
+# List Kafka topics
 docker compose exec kafka /opt/kafka/bin/kafka-topics.sh \
-  --bootstrap-server kafka:19092 --create --if-not-exists \
-  --topic kafka-smoke-test --partitions 1 --replication-factor 1
+  --bootstrap-server kafka:19092 --list
 
-printf 'hello kafka\n' | docker compose exec -T kafka \
-  /opt/kafka/bin/kafka-console-producer.sh \
-  --bootstrap-server kafka:19092 --topic kafka-smoke-test
-
-docker compose exec -T kafka /opt/kafka/bin/kafka-console-consumer.sh \
-  --bootstrap-server kafka:19092 --topic kafka-smoke-test \
-  --from-beginning --max-messages 1 --timeout-ms 10000
+# Stop the stack and keep stored data
+docker compose down
 ```
 
-The consumer should print `hello kafka`. For troubleshooting, run
-`docker compose logs --tail=100 kafka`. To stop just Kafka while retaining its
-data, run `docker compose stop kafka`.
+PostgreSQL, MongoDB, and Kafka use named volumes. To reset all local data, run `docker compose down -v`; this deletes
+those volumes, and the next startup recreates the databases and seed data.
 
-This adds the Kafka infrastructure. Order events, payment events, serializers,
-and notification consumers will be added as you reach those tutorial sections.
+If startup fails, inspect `docker compose ps --all` and `docker compose logs --tail=100 SERVICE_NAME`. Check for
+occupied ports, Docker memory limits, or failed initialization containers. If the gateway briefly returns `503` after
+startup, allow Eureka registration to settle and retry.
 
-References: [Apache's Docker guide](https://kafka.apache.org/42/getting-started/docker/)
-and [single-node Compose example](https://github.com/apache/kafka/blob/trunk/docker/examples/docker-compose-files/single-node/plaintext/docker-compose.yml).
+## Local development
+
+With Java 21 and Maven installed, build and run tests from the repository root:
+
+```sh
+mvn verify
+
+# Verify one service and its shared dependencies
+mvn -pl services/order-service -am verify
+```
+
+Docker builds skip tests, so run these checks separately when changing code.
+
+To run the Spring services from your IDE, first stop any containerized application services and start only
+infrastructure:
+
+```sh
+docker compose down
+docker compose up -d --wait postgres-init mongodb kafka mail-dev mongo-express
+mvn -DskipTests install
+```
+
+Start **Config Server → Discovery Server → customer, product, and payment services → order and notification services →
+Gateway**. The checked-in configuration uses `localhost` for IDE runs; Compose overrides addresses with container
+service names.
+
+## Project layout
+
+```text
+services/
+  config-server/        Centralized configuration
+  discovery-server/     Eureka registry
+  gateway-server/       API routing
+  customer-service/     Customers and addresses
+  product-service/      Catalog and stock
+  order-service/        Orders and order lines
+  payment-service/      Payment records and events
+  notification-service/ Notifications and emails
+shared/common/          API responses and messaging utilities
+infra/postgres/         Database initialization
+docker-compose.yml      Complete local stack
+```

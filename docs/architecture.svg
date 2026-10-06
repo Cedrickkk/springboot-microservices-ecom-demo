@@ -1,0 +1,289 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="815" viewBox="0 0 1120 815" role="img"
+     aria-labelledby="title description">
+    <title id="title">Spring Boot e-commerce microservices architecture</title>
+    <desc id="description">Client calls the API gateway, which routes to customer, product and order services. Order
+        calls customer, product and payment services. Order and payment publish Kafka events consumed by notification
+        service, which stores notifications and sends emails to MailDev. Service databases, Eureka discovery and Config
+        Server are shown.
+    </desc>
+    <rect width="1120" height="815" fill="#ffffff"/>
+    <rect x="30" y="190" width="1060" height="565" rx="15" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.4"/>
+    <ellipse cx="440" cy="32" rx="7" ry="7" fill="#ffffff" stroke="#475569" stroke-width="1.3"/>
+    <polyline points="429,57 429,51 433,45 447,45 451,51 451,57" fill="none" stroke="#475569" stroke-width="1.6"
+              stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="440" y="78" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="600"
+          fill="#334155">Client
+    </text>
+    <polyline points="440,85 440,115" fill="none" stroke="#64748b" stroke-width="1.6" stroke-linecap="round"
+              stroke-linejoin="round"/>
+    <polygon points="440.00,115.00 443.70,107.00 436.30,107.00" fill="#64748b"/>
+    <rect x="350" y="115" width="180" height="52" rx="10" fill="#eff6ff" stroke="#93b6e7" stroke-width="1.2"/>
+    <rect x="365" y="134" width="10" height="10" rx="2" fill="#eff6ff" stroke="#2563eb" stroke-width="1.2"/>
+    <polyline points="375,139 382,139 382,130 389,130" fill="none" stroke="#2563eb" stroke-width="1.3"
+              stroke-linecap="round" stroke-linejoin="round"/>
+    <ellipse cx="391" cy="130" rx="2.3" ry="2.3" fill="#eff6ff" stroke="#2563eb" stroke-width="1"/>
+    <polyline points="375,139 382,139 382,139 389,139" fill="none" stroke="#2563eb" stroke-width="1.3"
+              stroke-linecap="round" stroke-linejoin="round"/>
+    <ellipse cx="391" cy="139" rx="2.3" ry="2.3" fill="#eff6ff" stroke="#2563eb" stroke-width="1"/>
+    <polyline points="375,139 382,139 382,148 389,148" fill="none" stroke="#2563eb" stroke-width="1.3"
+              stroke-linecap="round" stroke-linejoin="round"/>
+    <ellipse cx="391" cy="148" rx="2.3" ry="2.3" fill="#eff6ff" stroke="#2563eb" stroke-width="1"/>
+    <text x="456" y="147" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="600"
+          fill="#334155">API Gateway
+    </text>
+    <rect x="710" y="62" width="160" height="56" rx="10" fill="#fbfef9" stroke="#b6c7a8" stroke-width="1.2"/>
+    <polyline
+            points="739.363961030679,83.63603896932108 739.8943999880707,84.21491151282115 740.3723683986009,84.83781207284059 740.7942286340599,85.5 741.1567700833299,86.1964356443337 741.4572335870732,86.92181871006898 741.6933324366016,87.67062859407731 741.8632697771098,88.43716640099763 741.9657522828257,89.21559831527108 742.0,90.0 741.9657522828257,90.78440168472892 741.8632697771098,91.56283359900237 741.6933324366016,92.32937140592269 741.4572335870732,93.07818128993102 741.1567700833299,93.8035643556663 740.7942286340599,94.5 740.3723683986009,95.16218792715941 739.8943999880707,95.78508848717885 739.363961030679,96.36396103067892 738.7850884871789,96.8943999880708 738.1621879271594,97.37236839860093 737.5,97.79422863405995 736.8035643556663,98.15677008332985 736.078181289931,98.45723358707318 735.3293714059226,98.69333243660162 734.5628335990024,98.86326977710988 733.7844016847289,98.9657522828257 733.0,99.0 732.2155983152711,98.9657522828257 731.4371664009976,98.86326977710988 730.6706285940774,98.69333243660162 729.921818710069,98.45723358707318 729.1964356443337,98.15677008332985 728.5,97.79422863405995 727.8378120728406,97.37236839860093 727.2149115128211,96.8943999880708 726.636038969321,96.36396103067892 726.1056000119293,95.78508848717885 725.6276316013991,95.16218792715942 725.2057713659401,94.5 724.8432299166701,93.8035643556663 724.5427664129269,93.07818128993102 724.3066675633984,92.32937140592269 724.1367302228902,91.56283359900237 724.0342477171743,90.78440168472893 724.0,90.0 724.0342477171743,89.21559831527108 724.1367302228902,88.43716640099763 724.3066675633984,87.67062859407731 724.5427664129268,86.92181871006898 724.8432299166701,86.1964356443337 725.2057713659401,85.5 725.6276316013991,84.83781207284059 726.1056000119293,84.21491151282115 726.636038969321,83.63603896932108"
+            fill="none" stroke="#65a30d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <polyline points="733,78 733,88" fill="none" stroke="#65a30d" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round"/>
+    <text x="800.0" y="95" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" font-weight="600"
+          fill="#334155">Eureka
+    </text>
+    <rect x="915" y="62" width="175" height="56" rx="10" fill="#fbfef9" stroke="#b6c7a8" stroke-width="1.2"/>
+    <polyline
+            points="944.363961030679,83.63603896932108 944.8943999880707,84.21491151282115 945.3723683986009,84.83781207284059 945.7942286340599,85.5 946.1567700833299,86.1964356443337 946.4572335870732,86.92181871006898 946.6933324366016,87.67062859407731 946.8632697771098,88.43716640099763 946.9657522828257,89.21559831527108 947.0,90.0 946.9657522828257,90.78440168472892 946.8632697771098,91.56283359900237 946.6933324366016,92.32937140592269 946.4572335870732,93.07818128993102 946.1567700833299,93.8035643556663 945.7942286340599,94.5 945.3723683986009,95.16218792715941 944.8943999880707,95.78508848717885 944.363961030679,96.36396103067892 943.7850884871789,96.8943999880708 943.1621879271594,97.37236839860093 942.5,97.79422863405995 941.8035643556663,98.15677008332985 941.078181289931,98.45723358707318 940.3293714059226,98.69333243660162 939.5628335990024,98.86326977710988 938.7844016847289,98.9657522828257 938.0,99.0 937.2155983152711,98.9657522828257 936.4371664009976,98.86326977710988 935.6706285940774,98.69333243660162 934.921818710069,98.45723358707318 934.1964356443337,98.15677008332985 933.5,97.79422863405995 932.8378120728406,97.37236839860093 932.2149115128211,96.8943999880708 931.636038969321,96.36396103067892 931.1056000119293,95.78508848717885 930.6276316013991,95.16218792715942 930.2057713659401,94.5 929.8432299166701,93.8035643556663 929.5427664129269,93.07818128993102 929.3066675633984,92.32937140592269 929.1367302228902,91.56283359900237 929.0342477171743,90.78440168472893 929.0,90.0 929.0342477171743,89.21559831527108 929.1367302228902,88.43716640099763 929.3066675633984,87.67062859407731 929.5427664129268,86.92181871006898 929.8432299166701,86.1964356443337 930.2057713659401,85.5 930.6276316013991,84.83781207284059 931.1056000119293,84.21491151282115 931.636038969321,83.63603896932108"
+            fill="none" stroke="#65a30d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <polyline points="938,78 938,88" fill="none" stroke="#65a30d" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round"/>
+    <text x="1012.5" y="95" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" font-weight="600"
+          fill="#334155">Config Server
+    </text>
+    <polyline points="915,90 870,90" fill="none" stroke="#64748b" stroke-width="1.6" stroke-linecap="round"
+              stroke-linejoin="round"/>
+    <polygon points="870.00,90.00 878.00,93.70 878.00,86.30" fill="#64748b"/>
+    <polyline points="790,190 790,118" fill="none" stroke="#64748b" stroke-width="1.6" stroke-linecap="round"
+              stroke-linejoin="round" stroke-dasharray="6 5"/>
+    <polygon points="790.00,118.00 786.30,126.00 793.70,126.00" fill="#64748b"/>
+    <text x="775" y="157" text-anchor="end" font-family="Arial, sans-serif" font-size="12" font-weight="400"
+          fill="#334155">discovery
+    </text>
+    <polyline points="1002,118 1002,190" fill="none" stroke="#64748b" stroke-width="1.6" stroke-linecap="round"
+              stroke-linejoin="round" stroke-dasharray="6 5"/>
+    <polygon points="1002.00,190.00 1005.70,182.00 998.30,182.00" fill="#64748b"/>
+    <text x="985" y="157" text-anchor="end" font-family="Arial, sans-serif" font-size="12" font-weight="400"
+          fill="#334155">configuration
+    </text>
+    <polyline points="440,167 440,220 160,220 160,300" fill="none" stroke="#64748b" stroke-width="1.6"
+              stroke-linecap="round" stroke-linejoin="round"/>
+    <polygon points="160.00,300.00 163.70,292.00 156.30,292.00" fill="#64748b"/>
+    <polyline points="440,220 440,270" fill="none" stroke="#64748b" stroke-width="1.6" stroke-linecap="round"
+              stroke-linejoin="round"/>
+    <polygon points="440.00,270.00 443.70,262.00 436.30,262.00" fill="#64748b"/>
+    <polyline points="440,220 690,220 690,330" fill="none" stroke="#64748b" stroke-width="1.6" stroke-linecap="round"
+              stroke-linejoin="round"/>
+    <polygon points="690.00,330.00 693.70,322.00 686.30,322.00" fill="#64748b"/>
+    <text x="270" y="213" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="400"
+          fill="#334155">/customers
+    </text>
+    <text x="487" y="252" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="400"
+          fill="#334155">/products
+    </text>
+    <text x="598" y="213" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="400"
+          fill="#334155">/orders
+    </text>
+    <polyline points="600,350 565,350 565,298 530,298" fill="none" stroke="#2563eb" stroke-width="1.6"
+              stroke-linecap="round" stroke-linejoin="round"/>
+    <polygon points="530.00,298.00 538.00,301.70 538.00,294.30" fill="#2563eb"/>
+    <polyline points="600,368 585,368 585,510 285,510 285,328 250,328" fill="none" stroke="#2563eb" stroke-width="1.6"
+              stroke-linecap="round" stroke-linejoin="round"/>
+    <polygon points="250.00,328.00 258.00,331.70 258.00,324.30" fill="#2563eb"/>
+    <polyline points="780,358 850,358" fill="none" stroke="#2563eb" stroke-width="1.6" stroke-linecap="round"
+              stroke-linejoin="round"/>
+    <polygon points="850.00,358.00 842.00,354.30 842.00,361.70" fill="#2563eb"/>
+    <text x="815" y="345" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="400"
+          fill="#2563eb">/payments
+    </text>
+    <polyline points="160,356 160,413" fill="none" stroke="#94a3b8" stroke-width="1.3" stroke-linecap="round"
+              stroke-linejoin="round"/>
+    <polygon points="160.00,413.00 163.70,405.00 156.30,405.00" fill="#94a3b8"/>
+    <polyline points="440,326 440,392" fill="none" stroke="#94a3b8" stroke-width="1.3" stroke-linecap="round"
+              stroke-linejoin="round"/>
+    <polygon points="440.00,392.00 443.70,384.00 436.30,384.00" fill="#94a3b8"/>
+    <polyline points="690,386 690,433" fill="none" stroke="#94a3b8" stroke-width="1.3" stroke-linecap="round"
+              stroke-linejoin="round"/>
+    <polygon points="690.00,433.00 693.70,425.00 686.30,425.00" fill="#94a3b8"/>
+    <polyline points="940,386 940,433" fill="none" stroke="#94a3b8" stroke-width="1.3" stroke-linecap="round"
+              stroke-linejoin="round"/>
+    <polygon points="940.00,433.00 943.70,425.00 936.30,425.00" fill="#94a3b8"/>
+    <polyline points="440,646 440,666" fill="none" stroke="#94a3b8" stroke-width="1.3" stroke-linecap="round"
+              stroke-linejoin="round"/>
+    <polygon points="440.00,666.00 443.70,658.00 436.30,658.00" fill="#94a3b8"/>
+    <polyline points="760,386 760,532 715,532 715,615" fill="none" stroke="#15803d" stroke-width="1.8"
+              stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="6 5"/>
+    <polygon points="715.00,615.00 718.70,607.00 711.30,607.00" fill="#15803d"/>
+    <text x="773" y="470" text-anchor="start" font-family="Arial, sans-serif" font-size="12" font-weight="600"
+          fill="#15803d">Order confirmation
+    </text>
+    <text x="773" y="489" text-anchor="start" font-family="Arial, sans-serif" font-size="11" font-weight="400"
+          fill="#15803d">order-topic · async
+    </text>
+    <polyline points="1010,386 1010,567 815,567 815,615" fill="none" stroke="#15803d" stroke-width="1.8"
+              stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="6 5"/>
+    <polygon points="815.00,615.00 818.70,607.00 811.30,607.00" fill="#15803d"/>
+    <text x="995" y="523" text-anchor="end" font-family="Arial, sans-serif" font-size="12" font-weight="600"
+          fill="#15803d">Payment confirmation
+    </text>
+    <text x="995" y="542" text-anchor="end" font-family="Arial, sans-serif" font-size="11" font-weight="400"
+          fill="#15803d">payment-topic · async
+    </text>
+    <polyline points="650,649 570,649 570,618 530,618" fill="none" stroke="#15803d" stroke-width="1.8"
+              stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="6 5"/>
+    <polygon points="530.00,618.00 538.00,621.70 538.00,614.30" fill="#15803d"/>
+    <text x="589" y="666" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="400"
+          fill="#15803d">consume
+    </text>
+    <polyline points="350,618 250,618" fill="none" stroke="#64748b" stroke-width="1.6" stroke-linecap="round"
+              stroke-linejoin="round"/>
+    <polygon points="250.00,618.00 258.00,621.70 258.00,614.30" fill="#64748b"/>
+    <text x="300" y="606" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="400"
+          fill="#334155">SMTP
+    </text>
+    <rect x="70" y="300" width="180" height="56" rx="10" fill="#fbfef9" stroke="#b6c7a8" stroke-width="1.2"/>
+    <polyline
+            points="99.36396103067892,321.6360389693211 99.8943999880708,322.2149115128211 100.37236839860093,322.83781207284056 100.79422863405995,323.5 101.15677008332985,324.1964356443337 101.45723358707318,324.921818710069 101.69333243660162,325.6706285940773 101.86326977710988,326.4371664009976 101.9657522828257,327.21559831527105 102.0,328.0 101.9657522828257,328.78440168472895 101.86326977710988,329.5628335990024 101.69333243660162,330.3293714059227 101.45723358707318,331.078181289931 101.15677008332985,331.8035643556663 100.79422863405995,332.5 100.37236839860093,333.16218792715944 99.8943999880708,333.7850884871789 99.36396103067892,334.3639610306789 98.78508848717885,334.8943999880708 98.16218792715941,335.37236839860094 97.5,335.79422863405995 96.8035643556663,336.15677008332983 96.07818128993102,336.4572335870732 95.32937140592269,336.6933324366016 94.56283359900237,336.86326977710985 93.78440168472892,336.9657522828257 93.0,337.0 92.21559831527108,336.9657522828257 91.43716640099763,336.86326977710985 90.67062859407731,336.6933324366016 89.92181871006898,336.4572335870732 89.1964356443337,336.15677008332983 88.5,335.79422863405995 87.83781207284059,335.37236839860094 87.21491151282115,334.8943999880708 86.63603896932108,334.3639610306789 86.1056000119292,333.7850884871789 85.62763160139907,333.16218792715944 85.20577136594005,332.5 84.84322991667015,331.8035643556663 84.54276641292682,331.078181289931 84.30666756339839,330.3293714059227 84.13673022289012,329.5628335990024 84.0342477171743,328.78440168472895 84.0,328.0 84.0342477171743,327.21559831527105 84.13673022289012,326.4371664009976 84.30666756339838,325.6706285940773 84.54276641292682,324.921818710069 84.84322991667015,324.1964356443337 85.20577136594005,323.5 85.62763160139907,322.83781207284056 86.1056000119292,322.2149115128211 86.63603896932108,321.6360389693211"
+            fill="none" stroke="#65a30d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <polyline points="93,316 93,326" fill="none" stroke="#65a30d" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round"/>
+    <text x="170.0" y="333" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" font-weight="600"
+          fill="#334155">Customer
+    </text>
+    <rect x="350" y="270" width="180" height="56" rx="10" fill="#fbfef9" stroke="#b6c7a8" stroke-width="1.2"/>
+    <polyline
+            points="379.3639610306789,291.6360389693211 379.8943999880708,292.2149115128211 380.37236839860094,292.83781207284056 380.79422863405995,293.5 381.15677008332983,294.1964356443337 381.4572335870732,294.921818710069 381.6933324366016,295.6706285940773 381.86326977710985,296.4371664009976 381.9657522828257,297.21559831527105 382.0,298.0 381.9657522828257,298.78440168472895 381.86326977710985,299.5628335990024 381.6933324366016,300.3293714059227 381.4572335870732,301.078181289931 381.15677008332983,301.8035643556663 380.79422863405995,302.5 380.37236839860094,303.16218792715944 379.8943999880708,303.7850884871789 379.3639610306789,304.3639610306789 378.7850884871789,304.8943999880708 378.16218792715944,305.37236839860094 377.5,305.79422863405995 376.8035643556663,306.15677008332983 376.078181289931,306.4572335870732 375.3293714059227,306.6933324366016 374.5628335990024,306.86326977710985 373.78440168472895,306.9657522828257 373.0,307.0 372.21559831527105,306.9657522828257 371.4371664009976,306.86326977710985 370.6706285940773,306.6933324366016 369.921818710069,306.4572335870732 369.1964356443337,306.15677008332983 368.5,305.79422863405995 367.83781207284056,305.37236839860094 367.2149115128211,304.8943999880708 366.6360389693211,304.3639610306789 366.1056000119292,303.7850884871789 365.62763160139906,303.16218792715944 365.20577136594005,302.5 364.84322991667017,301.8035643556663 364.5427664129268,301.078181289931 364.3066675633984,300.3293714059227 364.13673022289015,299.5628335990024 364.0342477171743,298.78440168472895 364.0,298.0 364.0342477171743,297.21559831527105 364.13673022289015,296.4371664009976 364.3066675633984,295.6706285940773 364.5427664129268,294.921818710069 364.84322991667017,294.1964356443337 365.20577136594005,293.5 365.62763160139906,292.83781207284056 366.1056000119292,292.2149115128211 366.6360389693211,291.6360389693211"
+            fill="none" stroke="#65a30d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <polyline points="373,286 373,296" fill="none" stroke="#65a30d" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round"/>
+    <text x="450.0" y="303" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" font-weight="600"
+          fill="#334155">Product
+    </text>
+    <rect x="600" y="330" width="180" height="56" rx="10" fill="#fbfef9" stroke="#b6c7a8" stroke-width="1.2"/>
+    <polyline
+            points="629.363961030679,351.6360389693211 629.8943999880707,352.2149115128211 630.3723683986009,352.83781207284056 630.7942286340599,353.5 631.1567700833299,354.1964356443337 631.4572335870732,354.921818710069 631.6933324366016,355.6706285940773 631.8632697771098,356.4371664009976 631.9657522828257,357.21559831527105 632.0,358.0 631.9657522828257,358.78440168472895 631.8632697771098,359.5628335990024 631.6933324366016,360.3293714059227 631.4572335870732,361.078181289931 631.1567700833299,361.8035643556663 630.7942286340599,362.5 630.3723683986009,363.16218792715944 629.8943999880707,363.7850884871789 629.363961030679,364.3639610306789 628.7850884871789,364.8943999880708 628.1621879271594,365.37236839860094 627.5,365.79422863405995 626.8035643556663,366.15677008332983 626.078181289931,366.4572335870732 625.3293714059226,366.6933324366016 624.5628335990024,366.86326977710985 623.7844016847289,366.9657522828257 623.0,367.0 622.2155983152711,366.9657522828257 621.4371664009976,366.86326977710985 620.6706285940774,366.6933324366016 619.921818710069,366.4572335870732 619.1964356443337,366.15677008332983 618.5,365.79422863405995 617.8378120728406,365.37236839860094 617.2149115128211,364.8943999880708 616.636038969321,364.3639610306789 616.1056000119293,363.7850884871789 615.6276316013991,363.16218792715944 615.2057713659401,362.5 614.8432299166701,361.8035643556663 614.5427664129269,361.078181289931 614.3066675633984,360.3293714059227 614.1367302228902,359.5628335990024 614.0342477171743,358.78440168472895 614.0,358.0 614.0342477171743,357.21559831527105 614.1367302228902,356.4371664009976 614.3066675633984,355.6706285940773 614.5427664129268,354.921818710069 614.8432299166701,354.1964356443337 615.2057713659401,353.5 615.6276316013991,352.83781207284056 616.1056000119293,352.2149115128211 616.636038969321,351.6360389693211"
+            fill="none" stroke="#65a30d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <polyline points="623,346 623,356" fill="none" stroke="#65a30d" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round"/>
+    <text x="700.0" y="363" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" font-weight="600"
+          fill="#334155">Order
+    </text>
+    <rect x="850" y="330" width="180" height="56" rx="10" fill="#fbfef9" stroke="#b6c7a8" stroke-width="1.2"/>
+    <polyline
+            points="879.363961030679,351.6360389693211 879.8943999880707,352.2149115128211 880.3723683986009,352.83781207284056 880.7942286340599,353.5 881.1567700833299,354.1964356443337 881.4572335870732,354.921818710069 881.6933324366016,355.6706285940773 881.8632697771098,356.4371664009976 881.9657522828257,357.21559831527105 882.0,358.0 881.9657522828257,358.78440168472895 881.8632697771098,359.5628335990024 881.6933324366016,360.3293714059227 881.4572335870732,361.078181289931 881.1567700833299,361.8035643556663 880.7942286340599,362.5 880.3723683986009,363.16218792715944 879.8943999880707,363.7850884871789 879.363961030679,364.3639610306789 878.7850884871789,364.8943999880708 878.1621879271594,365.37236839860094 877.5,365.79422863405995 876.8035643556663,366.15677008332983 876.078181289931,366.4572335870732 875.3293714059226,366.6933324366016 874.5628335990024,366.86326977710985 873.7844016847289,366.9657522828257 873.0,367.0 872.2155983152711,366.9657522828257 871.4371664009976,366.86326977710985 870.6706285940774,366.6933324366016 869.921818710069,366.4572335870732 869.1964356443337,366.15677008332983 868.5,365.79422863405995 867.8378120728406,365.37236839860094 867.2149115128211,364.8943999880708 866.636038969321,364.3639610306789 866.1056000119293,363.7850884871789 865.6276316013991,363.16218792715944 865.2057713659401,362.5 864.8432299166701,361.8035643556663 864.5427664129269,361.078181289931 864.3066675633984,360.3293714059227 864.1367302228902,359.5628335990024 864.0342477171743,358.78440168472895 864.0,358.0 864.0342477171743,357.21559831527105 864.1367302228902,356.4371664009976 864.3066675633984,355.6706285940773 864.5427664129268,354.921818710069 864.8432299166701,354.1964356443337 865.2057713659401,353.5 865.6276316013991,352.83781207284056 866.1056000119293,352.2149115128211 866.636038969321,351.6360389693211"
+            fill="none" stroke="#65a30d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <polyline points="873,346 873,356" fill="none" stroke="#65a30d" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round"/>
+    <text x="950.0" y="363" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" font-weight="600"
+          fill="#334155">Payment
+    </text>
+    <rect x="350" y="590" width="180" height="56" rx="10" fill="#fbfef9" stroke="#b6c7a8" stroke-width="1.2"/>
+    <polyline
+            points="379.3639610306789,611.636038969321 379.8943999880708,612.2149115128211 380.37236839860094,612.8378120728406 380.79422863405995,613.5 381.15677008332983,614.1964356443337 381.4572335870732,614.921818710069 381.6933324366016,615.6706285940774 381.86326977710985,616.4371664009976 381.9657522828257,617.2155983152711 382.0,618.0 381.9657522828257,618.7844016847289 381.86326977710985,619.5628335990024 381.6933324366016,620.3293714059226 381.4572335870732,621.078181289931 381.15677008332983,621.8035643556663 380.79422863405995,622.5 380.37236839860094,623.1621879271594 379.8943999880708,623.7850884871789 379.3639610306789,624.363961030679 378.7850884871789,624.8943999880707 378.16218792715944,625.3723683986009 377.5,625.7942286340599 376.8035643556663,626.1567700833299 376.078181289931,626.4572335870731 375.3293714059227,626.6933324366016 374.5628335990024,626.8632697771098 373.78440168472895,626.9657522828257 373.0,627.0 372.21559831527105,626.9657522828257 371.4371664009976,626.8632697771098 370.6706285940773,626.6933324366016 369.921818710069,626.4572335870732 369.1964356443337,626.1567700833299 368.5,625.7942286340599 367.83781207284056,625.3723683986009 367.2149115128211,624.8943999880707 366.6360389693211,624.363961030679 366.1056000119292,623.7850884871789 365.62763160139906,623.1621879271594 365.20577136594005,622.5 364.84322991667017,621.8035643556663 364.5427664129268,621.078181289931 364.3066675633984,620.3293714059226 364.13673022289015,619.5628335990024 364.0342477171743,618.7844016847289 364.0,618.0 364.0342477171743,617.2155983152711 364.13673022289015,616.4371664009976 364.3066675633984,615.6706285940774 364.5427664129268,614.921818710069 364.84322991667017,614.1964356443337 365.20577136594005,613.5 365.62763160139906,612.8378120728406 366.1056000119292,612.2149115128211 366.6360389693211,611.636038969321"
+            fill="none" stroke="#65a30d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <polyline points="373,606 373,616" fill="none" stroke="#65a30d" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round"/>
+    <text x="450.0" y="623" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" font-weight="600"
+          fill="#334155">Notification
+    </text>
+    <rect x="128" y="423" width="64" height="42" rx="0" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.2"/>
+    <ellipse cx="160" cy="465" rx="32" ry="9" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.3"/>
+    <rect x="129" y="424" width="62" height="40" fill="#f8fafc"/>
+    <polyline points="128,423 128,465" fill="none" stroke="#94a3b8" stroke-width="1.2" stroke-linecap="round"
+              stroke-linejoin="round"/>
+    <polyline points="192,423 192,465" fill="none" stroke="#94a3b8" stroke-width="1.2" stroke-linecap="round"
+              stroke-linejoin="round"/>
+    <ellipse cx="160" cy="423" rx="32" ry="9" fill="#eef2f6" stroke="#94a3b8" stroke-width="1.3"/>
+    <text x="160" y="491" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="400"
+          fill="#64748b">MongoDB · customer
+    </text>
+    <rect x="408" y="402" width="64" height="42" rx="0" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.2"/>
+    <ellipse cx="440" cy="444" rx="32" ry="9" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.3"/>
+    <rect x="409" y="403" width="62" height="40" fill="#f8fafc"/>
+    <polyline points="408,402 408,444" fill="none" stroke="#94a3b8" stroke-width="1.2" stroke-linecap="round"
+              stroke-linejoin="round"/>
+    <polyline points="472,402 472,444" fill="none" stroke="#94a3b8" stroke-width="1.2" stroke-linecap="round"
+              stroke-linejoin="round"/>
+    <ellipse cx="440" cy="402" rx="32" ry="9" fill="#eef2f6" stroke="#94a3b8" stroke-width="1.3"/>
+    <text x="440" y="470" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="400"
+          fill="#64748b">PostgreSQL · product
+    </text>
+    <rect x="658" y="443" width="64" height="42" rx="0" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.2"/>
+    <ellipse cx="690" cy="485" rx="32" ry="9" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.3"/>
+    <rect x="659" y="444" width="62" height="40" fill="#f8fafc"/>
+    <polyline points="658,443 658,485" fill="none" stroke="#94a3b8" stroke-width="1.2" stroke-linecap="round"
+              stroke-linejoin="round"/>
+    <polyline points="722,443 722,485" fill="none" stroke="#94a3b8" stroke-width="1.2" stroke-linecap="round"
+              stroke-linejoin="round"/>
+    <ellipse cx="690" cy="443" rx="32" ry="9" fill="#eef2f6" stroke="#94a3b8" stroke-width="1.3"/>
+    <text x="690" y="511" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="400"
+          fill="#64748b">PostgreSQL · order
+    </text>
+    <rect x="908" y="443" width="64" height="42" rx="0" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.2"/>
+    <ellipse cx="940" cy="485" rx="32" ry="9" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.3"/>
+    <rect x="909" y="444" width="62" height="40" fill="#f8fafc"/>
+    <polyline points="908,443 908,485" fill="none" stroke="#94a3b8" stroke-width="1.2" stroke-linecap="round"
+              stroke-linejoin="round"/>
+    <polyline points="972,443 972,485" fill="none" stroke="#94a3b8" stroke-width="1.2" stroke-linecap="round"
+              stroke-linejoin="round"/>
+    <ellipse cx="940" cy="443" rx="32" ry="9" fill="#eef2f6" stroke="#94a3b8" stroke-width="1.3"/>
+    <text x="940" y="511" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="400"
+          fill="#64748b">PostgreSQL · payment
+    </text>
+    <rect x="408" y="676" width="64" height="42" rx="0" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.2"/>
+    <ellipse cx="440" cy="718" rx="32" ry="9" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.3"/>
+    <rect x="409" y="677" width="62" height="40" fill="#f8fafc"/>
+    <polyline points="408,676 408,718" fill="none" stroke="#94a3b8" stroke-width="1.2" stroke-linecap="round"
+              stroke-linejoin="round"/>
+    <polyline points="472,676 472,718" fill="none" stroke="#94a3b8" stroke-width="1.2" stroke-linecap="round"
+              stroke-linejoin="round"/>
+    <ellipse cx="440" cy="676" rx="32" ry="9" fill="#eef2f6" stroke="#94a3b8" stroke-width="1.3"/>
+    <text x="440" y="744" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="400"
+          fill="#64748b">MongoDB · notification
+    </text>
+    <rect x="100" y="590" width="150" height="56" rx="10" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.2"/>
+    <rect x="115" y="610" width="24" height="16" rx="2" fill="#ffffff" stroke="#64748b" stroke-width="1.2"/>
+    <polyline points="115,610 127,619 139,610" fill="none" stroke="#64748b" stroke-width="1.2" stroke-linecap="round"
+              stroke-linejoin="round"/>
+    <text x="190" y="624" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" font-weight="600"
+          fill="#334155">MailDev
+    </text>
+    <rect x="650" y="615" width="210" height="68" rx="10" fill="#f0fdf4" stroke="#86b593" stroke-width="1.2"/>
+    <polyline points="683,649 671,637" fill="none" stroke="#15803d" stroke-width="1.3" stroke-linecap="round"
+              stroke-linejoin="round"/>
+    <ellipse cx="671" cy="637" rx="3.6" ry="3.6" fill="#f0fdf4" stroke="#15803d" stroke-width="1.4"/>
+    <polyline points="683,649 683,649" fill="none" stroke="#15803d" stroke-width="1.3" stroke-linecap="round"
+              stroke-linejoin="round"/>
+    <ellipse cx="683" cy="649" rx="3.6" ry="3.6" fill="#f0fdf4" stroke="#15803d" stroke-width="1.4"/>
+    <polyline points="683,649 671,661" fill="none" stroke="#15803d" stroke-width="1.3" stroke-linecap="round"
+              stroke-linejoin="round"/>
+    <ellipse cx="671" cy="661" rx="3.6" ry="3.6" fill="#f0fdf4" stroke="#15803d" stroke-width="1.4"/>
+    <text x="764" y="642" text-anchor="middle" font-family="Arial, sans-serif" font-size="17" font-weight="600"
+          fill="#334155">Kafka
+    </text>
+    <text x="764" y="663" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="400"
+          fill="#64748b">message broker
+    </text>
+    <polyline points="58,789 90,789" fill="none" stroke="#475569" stroke-width="1.6" stroke-linecap="round"
+              stroke-linejoin="round"/>
+    <polygon points="90.00,789.00 82.00,785.30 82.00,792.70" fill="#475569"/>
+    <text x="101" y="794" text-anchor="start" font-family="Arial, sans-serif" font-size="12" font-weight="400"
+          fill="#334155">API routing
+    </text>
+    <polyline points="259,789 291,789" fill="none" stroke="#2563eb" stroke-width="1.6" stroke-linecap="round"
+              stroke-linejoin="round"/>
+    <polygon points="291.00,789.00 283.00,785.30 283.00,792.70" fill="#2563eb"/>
+    <text x="302" y="794" text-anchor="start" font-family="Arial, sans-serif" font-size="12" font-weight="400"
+          fill="#334155">OpenFeign / HTTP
+    </text>
+    <polyline points="508,789 540,789" fill="none" stroke="#15803d" stroke-width="1.8" stroke-linecap="round"
+              stroke-linejoin="round" stroke-dasharray="6 5"/>
+    <polygon points="540.00,789.00 532.00,785.30 532.00,792.70" fill="#15803d"/>
+    <text x="551" y="794" text-anchor="start" font-family="Arial, sans-serif" font-size="12" font-weight="400"
+          fill="#334155">Kafka events
+    </text>
+    <polyline points="732,789 764,789" fill="none" stroke="#94a3b8" stroke-width="1.6" stroke-linecap="round"
+              stroke-linejoin="round"/>
+    <polygon points="764.00,789.00 756.00,785.30 756.00,792.70" fill="#94a3b8"/>
+    <text x="775" y="794" text-anchor="start" font-family="Arial, sans-serif" font-size="12" font-weight="400"
+          fill="#334155">Database access
+    </text>
+</svg>
