@@ -6,10 +6,13 @@ x-java-service: &java-service
 
 x-client-environment: &client-environment
   SPRING_CONFIG_IMPORT: configserver:http://config-server:8888
+  MANAGEMENT_TRACING_EXPORT_ZIPKIN_ENDPOINT: http://zipkin:9411/api/v2/spans
   EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka/
   EUREKA_INSTANCE_PREFER_IP_ADDRESS: "true"
 
 x-client-dependencies: &client-dependencies
+  zipkin:
+    condition: service_healthy
   config-server:
     condition: service_healthy
   discovery-server:
