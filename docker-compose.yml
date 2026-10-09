@@ -29,7 +29,7 @@ services:
     ports:
       - "127.0.0.1:5432:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -h localhost -U $$POSTGRES_USER -d postgres"]
+      test: [ "CMD-SHELL", "pg_isready -h localhost -U $$POSTGRES_USER -d postgres" ]
       interval: 5s
       timeout: 5s
       retries: 20
@@ -43,8 +43,8 @@ services:
       PGPASSWORD: admin
     volumes:
       - ./infra/postgres/init-databases.sql:/init-databases.sql:ro
-    entrypoint: ["psql"]
-    command: ["-h", "postgres", "-U", "admin", "-d", "postgres", "-v", "ON_ERROR_STOP=1", "-f", "/init-databases.sql"]
+    entrypoint: [ "psql" ]
+    command: [ "-h", "postgres", "-U", "admin", "-d", "postgres", "-v", "ON_ERROR_STOP=1", "-f", "/init-databases.sql" ]
     depends_on:
       postgres:
         condition: service_healthy
@@ -61,7 +61,7 @@ services:
       MONGO_INITDB_ROOT_USERNAME: admin
       MONGO_INITDB_ROOT_PASSWORD: admin
     healthcheck:
-      test: ["CMD-SHELL", "mongosh --quiet --host localhost --username $$MONGO_INITDB_ROOT_USERNAME --password $$MONGO_INITDB_ROOT_PASSWORD --authenticationDatabase admin --eval 'quit(db.adminCommand({ping: 1}).ok ? 0 : 1)'"]
+      test: [ "CMD-SHELL", "mongosh --quiet --host localhost --username $$MONGO_INITDB_ROOT_USERNAME --password $$MONGO_INITDB_ROOT_PASSWORD --authenticationDatabase admin --eval 'quit(db.adminCommand({ping: 1}).ok ? 0 : 1)'" ]
       interval: 10s
       timeout: 5s
       retries: 20
@@ -86,8 +86,8 @@ services:
   kafka-init:
     image: apache/kafka:4.2.2
     user: "0:0"
-    entrypoint: ["chown"]
-    command: ["-R", "1000:1000", "/tmp/kraft-combined-logs"]
+    entrypoint: [ "chown" ]
+    command: [ "-R", "1000:1000", "/tmp/kraft-combined-logs" ]
     volumes:
       - kafka:/tmp/kraft-combined-logs
     restart: "no"
@@ -118,7 +118,7 @@ services:
     volumes:
       - kafka:/tmp/kraft-combined-logs
     healthcheck:
-      test: ["CMD", "/opt/kafka/bin/kafka-topics.sh", "--bootstrap-server", "kafka:19092", "--list"]
+      test: [ "CMD", "/opt/kafka/bin/kafka-topics.sh", "--bootstrap-server", "kafka:19092", "--list" ]
       interval: 10s
       timeout: 10s
       retries: 10
@@ -129,6 +129,12 @@ services:
     mem_limit: 1g
     restart: unless-stopped
 
+  zipkin:
+    container_name: zipkin
+    image: openzipkin/zipkin
+    ports:
+      - "9411:9411"
+
   mail-dev:
     container_name: ms_mail_dev
     image: maildev/maildev:2.2.1
@@ -136,7 +142,7 @@ services:
       - "127.0.0.1:1080:1080"
       - "127.0.0.1:1025:1025"
     healthcheck:
-      test: ["CMD", "node", "-e", "require('http').get('http://127.0.0.1:1080', r => { r.resume(); process.exit(r.statusCode === 200 ? 0 : 1); }).on('error', () => process.exit(1))"]
+      test: [ "CMD", "node", "-e", "require('http').get('http://127.0.0.1:1080', r => { r.resume(); process.exit(r.statusCode === 200 ? 0 : 1); }).on('error', () => process.exit(1))" ]
       interval: 10s
       timeout: 5s
       retries: 10
